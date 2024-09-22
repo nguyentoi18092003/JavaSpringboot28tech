@@ -19,16 +19,20 @@ public class BuildingRepositoryImpl implements BuildingRepository{
 	static final String USER="root";
 	static final String PASS="toi@1809";
 	@Override
-	public List<BuildingEntity>findAll(String name) {
-		String sql= "SELECT * FROM building b WHERE name like '%"+ name +"%'";
-		System.out.println("------------------------------da vao------------------------");
-		//Tim kiem: GET http://localhost:8080/api/building/?name=building
+	public List<BuildingEntity>findAll(String name,Long districtId) {
+		StringBuilder sql= new StringBuilder("SELECT * FROM building b WHERE 1 = 1 ");
+		if(name!=null && !name.equals("")) {
+		    sql.append(" AND b.name like '%" +name+"%' ");
+		}
+		if(districtId!=null) {
+		    sql.append(" AND b.districtid="+districtId+" ");
+		}
+		//GET http://localhost:8080/api/building/?districtid=1& name=building
 		List<BuildingEntity> result =new ArrayList<>();
 		try(Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
 				Statement stmt = conn.createStatement();
-				ResultSet rs=stmt.executeQuery(sql);){
+				ResultSet rs=stmt.executeQuery(sql.toString())){
 			while(rs.next()) {
-				System.out.println("------------------------------da tim kiem------------------------");
 				BuildingEntity building=new BuildingEntity();
 				building.setName(rs.getString("name"));
 				building.setStreet(rs.getString("street"));

@@ -17,13 +17,12 @@ public class BuildingServiceImpl implements BuildingService{
 	private BuildingRepository buidingRepository;
 
 	@Override
-	public List<BuildingDTO> findAll(String name) {
-		List<BuildingEntity> buildingEntities=buidingRepository.findAll(name);
+	public List<BuildingDTO> findAll(String name,Long districtId) {
+		List<BuildingEntity> buildingEntities=buidingRepository.findAll(name,districtId);
 		List<BuildingDTO> result=new ArrayList<BuildingDTO>();
 		for(BuildingEntity item:buildingEntities) {
 			BuildingDTO building=new BuildingDTO();
 			building.setName(item.getName());
-			System.out.println("==========================="+item.getName());
 			building.setAddress(item.getStreet()+","+item.getWard());
 			building.setNumberOfBasement(item.getNumberOfBasement());
 			result.add(building);

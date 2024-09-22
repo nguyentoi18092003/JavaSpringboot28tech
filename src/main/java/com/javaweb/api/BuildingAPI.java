@@ -29,15 +29,9 @@ public class BuildingAPI {
 		@Autowired
 		private BuildingService buildingService;
 		@GetMapping(value="/api/building/")
-		public List<BuildingDTO> getBuilding(@RequestParam(name="name") String name){
-			
-			List<BuildingDTO> result=buildingService.findAll(name);
-			System.out.println("-------------------------da tim kiem xong ");
-			System.out.println(result.size());
-			for(BuildingDTO item:result) {
-				System.out.println("-------------------------"+ item.getName());
-				
-			}
+		public List<BuildingDTO> getBuilding(@RequestParam(name="name",required=false) String name,
+											@RequestParam(name="districtid",required=false) Long district){
+			List<BuildingDTO> result=buildingService.findAll(name,district);
 			return result;
 		}
 	
