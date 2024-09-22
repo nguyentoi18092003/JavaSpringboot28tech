@@ -30,7 +30,11 @@ public class BuildingAPI {
 		private BuildingService buildingService;
 		@GetMapping(value="/api/building/")
 		public List<BuildingDTO> getBuilding(@RequestParam(name="name",required=false) String name,
-											@RequestParam(name="districtid",required=false) Long district){
+											@RequestParam(name="districtid",required=false) Long district,
+											@RequestParam(name="typeCode",required=false) List<String> typeCode){
+			//GET http://localhost:8080/api/building/?typeCode=tang-tret,nguyen-can
+			//http://localhost:8080/api/building/?typeCode=tang-tret&typeCode=nguyen-can
+			//-> ví dụ bên fe gửi kiểu kia, thì bên này dùng list được
 			List<BuildingDTO> result=buildingService.findAll(name,district);
 			return result;
 		}
