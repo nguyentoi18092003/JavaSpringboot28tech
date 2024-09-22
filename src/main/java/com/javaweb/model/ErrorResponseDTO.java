@@ -1,10 +1,9 @@
-package Beans;
-
+package com.javaweb.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ErrorResonseDTO {
+public class ErrorResponseDTO {
 	private String error;
 	private List<String>detail=new ArrayList<String>();
 	public String getError() {

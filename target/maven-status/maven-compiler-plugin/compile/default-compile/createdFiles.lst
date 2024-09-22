@@ -1,0 +1,6 @@
+controllerAdvice\ControllerAdvisor.class
+com\javaweb\Application.class
+com\javaweb\api\BuildingAPI.class
+Beans\BuildingDTO.class
+customexception\FieldRequiredException.class
+Beans\ErrorResonseDTO.class
