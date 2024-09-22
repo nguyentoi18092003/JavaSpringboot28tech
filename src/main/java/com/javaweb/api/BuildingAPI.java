@@ -3,8 +3,8 @@ package com.javaweb.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,22 +16,14 @@ import Beans.ErrorResonseDTO;
 import customexception.FieldRequiredException;
 
 @RestController
+@ComponentScan(basePackages = "controllerAdvice")//them dong nay so voi anh day
 public class BuildingAPI {
 	
 		@PostMapping(value="/api/building/")
 		public Object getBuilding(@RequestBody BuildingDTO building){
-			//xu li duoi DB xong roi
-			try {
-				Validate(building);
-			} catch(FieldRequiredException e) {
-				ErrorResonseDTO errorResonseDTO=new ErrorResonseDTO();
-				errorResonseDTO.setError(e.getMessage());
-				List<String> details=new ArrayList<>();
-				details.add("Check lai name hoac ward di boi vi dang bi null");
-				errorResonseDTO.setDetail(details);
-				return errorResonseDTO;	
-			}
-			return building;
+			
+			Validate(building);
+			return null;
 		}
 	
 		public void Validate(BuildingDTO buildingDTO){
