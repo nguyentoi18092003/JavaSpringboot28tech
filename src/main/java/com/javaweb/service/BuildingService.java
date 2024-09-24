@@ -1,6 +1,7 @@
 package com.javaweb.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,6 @@ import com.javaweb.model.BuildingDTO;
 
 
 public interface BuildingService {
-	List<BuildingDTO> findAll(String name,Long districtId);
+	List<BuildingDTO> findAll(Map<String,Object>params,List<String> typeCode);
 
 }

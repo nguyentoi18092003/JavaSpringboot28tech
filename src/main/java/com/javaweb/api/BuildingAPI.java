@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,21 +30,19 @@ public class BuildingAPI {
 		@Autowired
 		private BuildingService buildingService;
 		@GetMapping(value="/api/building/")
-		public List<BuildingDTO> getBuilding(@RequestParam(name="name",required=false) String name,
-											@RequestParam(name="districtid",required=false) Long district,
-											@RequestParam(name="typeCode",required=false) List<String> typeCode){
-			//GET http://localhost:8080/api/building/?typeCode=tang-tret,nguyen-can
-			//http://localhost:8080/api/building/?typeCode=tang-tret&typeCode=nguyen-can
-			//-> ví dụ bên fe gửi kiểu kia, thì bên này dùng list được
-			List<BuildingDTO> result=buildingService.findAll(name,district);
+		public List<BuildingDTO> getBuilding(@RequestParam Map<String,Object>params,//Map luu cac cai key khac nhau
+											@RequestParam(name="typeCode",required=false) List<String> typeCode//Vi co nhieu typeCode nen phai dung List
+				//http://localhost:8080/api/building/?name=building&typeCode=tang-tret&typeCode=nol-that&typeCode=nguyen-can&districtId=1&areaFrom&rentPriceFrom=16
+				){
+			List<BuildingDTO> result=buildingService.findAll(params,typeCode);
 			return result;
 		}
 	
-		public void Validate(BuildingDTO buildingDTO){
-			if(buildingDTO.getName()==null||buildingDTO.getName().equals("")||buildingDTO.getNumberOfBasement()==null) {
-				throw new FieldRequiredException("name or numberofbasement is null");
-			}	
-		}
+//		public void Validate(BuildingDTO buildingDTO){
+//			if(buildingDTO.getName()==null||buildingDTO.getName().equals("")||buildingDTO.getNumberOfBasement()==null) {
+//				throw new FieldRequiredException("name or numberofbasement is null");
+//			}	
+//		}
 		
 		@DeleteMapping(value="/api/building/{id}/{name}/")
 		public void deleteBuilding(@PathVariable Integer id,
