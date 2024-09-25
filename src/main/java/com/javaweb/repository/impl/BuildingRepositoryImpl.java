@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.print.attribute.standard.DateTimeAtCompleted;
 
@@ -15,15 +16,14 @@ import org.springframework.stereotype.Repository;
 
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
+import com.javaweb.utils.ConnectionJDBCUtil;
 import com.javaweb.utils.NumberUntil;
 import com.javaweb.utils.StringUtil;
 import com.mysql.cj.Query;
 
 @Repository// Tang Data Acess Layer, de lay du lieu tu DB len, trong day cx dung cac Entity de hung du lieu tu database tra ve
 public class BuildingRepositoryImpl implements BuildingRepository{
-	static final String DB_URL="jdbc:mysql://localhost:3306/estatebasic";
-	static final String USER="root";
-	static final String PASS="toi@1809";
+	
 	public static void joinTable(Map<String,Object>params,List<String>typeCode,StringBuilder sql) {
 		String staffid=(String)params.get("staffId");
 		if(StringUtil.checkString(staffid)) {
@@ -34,12 +34,7 @@ public class BuildingRepositoryImpl implements BuildingRepository{
 			sql.append(" INNER JOIN buildingrenttype ON b.id= buildingrenttype.buildingid ");
 			sql.append(" INNER JOIN renttype ON renttype.id=buildingrenttype.renttypeid ");	
 		}
-		String rentAreaTo=(String) params.get("areaTo");
-		String rentAreaFrom=(String) params.get("areaFrom");
-		if(StringUtil.checkString(rentAreaTo)==true||StringUtil.checkString(rentAreaFrom)==true) {
-			sql.append(" INNER JOIN rentarea ON rentarea.buildingid=b.id ");
-			
-		}
+		
 		
 	}
 	public static void queryNomal(Map<String,Object>params,StringBuilder where) {
@@ -74,25 +69,32 @@ public class BuildingRepositoryImpl implements BuildingRepository{
 		String rentAreaTo=(String) params.get("areaTo");
 		String rentAreaFrom=(String) params.get("areaFrom");
 		if(StringUtil.checkString(rentAreaTo)==true||StringUtil.checkString(rentAreaFrom)==true) {
-			if(StringUtil.checkString(rentAreaFrom)) {
-				where.append(" AND rentarea.value >="+rentAreaFrom);
+			where.append(" AND EXISTS (SELECT * FROM rentarea r WHERE b.id=r.buildingid ");
+						if(StringUtil.checkString(rentAreaFrom)) {
+				where.append(" AND r.value >="+rentAreaFrom);
 				
 			}
 			if(StringUtil.checkString(rentAreaTo)) {
-				where.append(" AND rentarea.value <="+rentAreaTo);
+				where.append(" AND r.value <="+rentAreaTo);
 			}
+			where.append(") ");
+		}
 			
 			String rentPriceTo=(String) params.get("rentPriceTo");
 			String rentPriceFrom=(String) params.get("rentPriceFrom");
-			if(StringUtil.checkString(rentPriceTo)==true||StringUtil.checkString(rentPriceFrom)==true) {
+			if(StringUtil.checkString(rentPriceFrom)==true||StringUtil.checkString(rentPriceFrom)==true) {
 				where.append(" AND b.rentprice >=" + rentPriceFrom);
 			}
-			if(StringUtil.checkString(rentAreaTo)) {
+			if(StringUtil.checkString(rentPriceTo)) {
 				where.append(" AND  b.rentprice <=" + rentPriceTo);
 			}	
-		}
+		
+
 		if(typeCode!=null && typeCode.size()!=0) {
-			where.append(" AND renttype.code IN('"+String.join(",",typeCode)+"')");
+			where.append(" AND(");
+			String sql =typeCode.stream().map(it-> " renttype.code Like "+"'%"+it+"%'").collect(Collectors.joining(" OR "));
+			where.append(sql);
+			where.append(") ");
 		}
 		
 	}
@@ -109,7 +111,7 @@ public class BuildingRepositoryImpl implements BuildingRepository{
 		System.out.println(sql);
 		
 		List<BuildingEntity> result =new ArrayList<>();
-		try(Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
+		try(Connection conn = ConnectionJDBCUtil.getConnection();
 				Statement stmt = conn.createStatement();
 				ResultSet rs=stmt.executeQuery(sql.toString())){
 			while(rs.next()) {
@@ -119,7 +121,7 @@ public class BuildingRepositoryImpl implements BuildingRepository{
 				buildingEntity.setWard(rs.getString("b.ward"));
 				buildingEntity.setDistrictid(rs.getLong("b.districtid"));
 				buildingEntity.setStreet(rs.getString("b.street"));
-				buildingEntity.setFloorArea(rs.getString("b.floorarea"));
+				buildingEntity.setFloorArea(rs.getLong("b.floorarea"));
 				buildingEntity.setRentPrice(rs.getLong("b.rentprice"));
 				buildingEntity.setServiceFee(rs.getString("b.servicefee"));
 				buildingEntity.setBrokerageFee(rs.getLong("b.brokeragefee"));

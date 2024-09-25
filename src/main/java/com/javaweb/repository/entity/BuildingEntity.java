@@ -9,7 +9,7 @@ public class BuildingEntity {
 	private Long districtid;
 	private String managerName;
 	private String managerPhoneNumber;
-	private String floorArea;
+	private Long floorArea;
 	private String emptyArea;
 	private Long rentPrice;
 	private String serviceFee;
@@ -56,10 +56,10 @@ public class BuildingEntity {
 	public void setManagerPhoneNumber(String managerPhoneNumber) {
 		this.managerPhoneNumber = managerPhoneNumber;
 	}
-	public String getFloorArea() {
+	public Long getFloorArea() {
 		return floorArea;
 	}
-	public void setFloorArea(String floorArea) {
+	public void setFloorArea(Long floorArea) {
 		this.floorArea = floorArea;
 	}
 	public String getEmptyArea() {
